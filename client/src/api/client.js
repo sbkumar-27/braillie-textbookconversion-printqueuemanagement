@@ -30,11 +30,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      // Clear token if expired or invalid
+    const isAuthEndpoint = error.config?.url?.includes('/auth/login') || error.config?.url?.includes('/auth/register');
+    if (error.response && error.response.status === 401 && !isAuthEndpoint) {
       localStorage.removeItem('braillie_token');
       localStorage.removeItem('braillie_user');
-      // If we are not already on the login or register page, redirect
       if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
         window.location.href = '/login';
       }
